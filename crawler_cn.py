@@ -38,8 +38,8 @@ class LeetCodeCrawler:
             with open(COOKIE_PATH, 'rb') as f:
                 browser_cookies = pickle.load(f)
         else:
-            print("😎 Starting browser login..., please fill the login form")
-            browser = webdriver.Chrome(executable_path="./vendor/chromedriver")
+            print("[*] Starting browser login..., please fill the login form")
+            browser = webdriver.Edge()
             try:
                 # browser login
                 login_url = "https://leetcode.cn/accounts/login"
@@ -51,10 +51,10 @@ class LeetCodeCrawler:
                 browser_cookies = browser.get_cookies()
                 with open(COOKIE_PATH, 'wb') as f:
                     pickle.dump(browser_cookies, f)
-                print("🎉 Login successfully")
+                print("[+] Login successfully")
 
             except Exception as e:
-                print(f"🤔 Login Failed: {e}, please try again")
+                print(f"[-] Login Failed: {e}, please try again")
                 exit()
 
         cookies = RequestsCookieJar()
@@ -88,10 +88,10 @@ class LeetCodeCrawler:
                 # always try to update submission
                 # do(self.fetch_submission, args=[slug])
                 do(self.fetch_lastSubmission, args=[slug])
-        print(f"🤖 Updated {counter} problems")
+        print(f"[*] Updated {counter} problems")
 
     def questionData(self, slug, accepted=False):
-        print(f"🤖 Fetching problem: https://leetcode.cn/problems/{slug}/...")
+        print(f"[*] Fetching problem: https://leetcode.cn/problems/{slug}/...")
         query_params = {
             "operationName":"questionData",
             "variables":{
@@ -185,7 +185,7 @@ class LeetCodeCrawler:
         # random_wait(10, 15)
 
     def fetch_questionSolutionArticles(self, slug):
-        print(f"🤖 Fetching solution for problem: {slug}")
+        print(f"[*] Fetching solution for problem: {slug}")
         query_params = {
             "operationName":"questionSolutionArticles",
             "variables":{
@@ -240,7 +240,7 @@ class LeetCodeCrawler:
             ).execute()
 
     def fetch_submission(self, slug):
-        print(f"🤖 Fetching submission for problem: {slug}")
+        print(f"[*] Fetching submission for problem: {slug}")
         query_params = {
             'operationName': "Submissions",
             'variables': {"offset": 0, "limit": 20, "lastKey": '', "questionSlug": slug},

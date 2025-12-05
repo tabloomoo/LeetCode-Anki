@@ -15,3 +15,7 @@ build/
 venv/
 cookies.dat
 cookies_cn.dat
+
+# Ignore generated data files
+data/
+data_cn/
