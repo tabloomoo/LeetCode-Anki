@@ -1,58 +1,56 @@
-[中文版](./README_CN.md) | English
+## 介绍
 
-## Introduction
-
-When practicing on LeetCode, you often encounter problems similar to ones you've solved before, but forget the solution approach. [Anki](https://apps.ankiweb.net/) is a cross-platform memory tool based on the forgetting curve, supporting Mac, Linux, Windows, iOS, and Android platforms. While Anki is an excellent memory tool, it requires manual card creation, which is tedious and time-consuming.
+在刷LeetCode的过程中时常会遇到与之前类似的题目但是却忘记解题思路的情况。[Anki](https://apps.ankiweb.net/) 是一个基于遗忘曲线的全平台记忆工具，支持Mac，Linux， Windows， iOS和Andorid平台。Anki是一个优秀的记忆工具，但是在使用需要手动制卡，这个过程非常繁琐且耗时。
 
 > Invest some time to automate or simplify a process to save more time in the future
 
-**This project aims to automatically fetch your accepted LeetCode problems and generate Anki decks to help you remember them.**
+**本项目旨在抓取LeetCode已AC的题目，并自动生成Anki卡组帮助记忆。**
 
-The crawled data includes:
+抓取的数据包括：
 
-1. Problem title, difficulty, and description.
-2. Official solutions (Premium solutions require a subscription to fetch).
-3. Your accepted submission code.
+1. 题目标题，难度，描述。
+2. 官方题解（Premium的题解需要订阅才能抓取）。
+3. 用户AC的提交代码。
 
 ## DEMO
 
-|            Front            |           Back           |
+|            正面            |           背面           |
 | :------------------------: | :----------------------: |
 | ![front](./demo/front.JPG) | ![back](./demo/back.JPG) |
 
-Example [Deck](https://github.com/Peng-YM/LeetCode-Anki/blob/master/data/LeetCode.apkg?raw=true)
+示例[卡组](https://github.com/Peng-YM/LeetCode-Anki/blob/master/data/LeetCode.apkg?raw=true)
 
-## Usage
+## 使用
 
-First, clone the repository and install Python dependencies:
+首先Clone仓库并安装Python依赖
 ```bash
 git clone https://github.com/Peng-YM/LeetCode-Anki.git
 cd LeetCode-Anki
 pip3 install -r requirements.txt
 ```
 
-Run the crawler and output the Anki deck to `./data/LeetCode.apkg` (as specified in `project.conf`):
+运行爬虫并输出Anki卡组到`./data/LeetCode.apkg` （由`project.conf`指定）。
 
 ```bash
 python3 main.py
 ```
 
-For LeetCode.cn support:
+增加对Leetcode.cn的支持
 ```bash
 python3 main_cn.py
 ```
 
-On the first run, you need to obtain cookies. Running `main.py` will open a Chrome window where you manually enter your username and password to log in once.
+首次运行需要获取cookie，运行`main.py`会打开一个Chrome窗口, 手动填写用户名和密码登陆一次即可。
 
-> ⚠️ Note:
-> 1. If you need to re-login via browser, simply delete the `cookie.dat` file in the directory.
-> 2. If the browser driver is outdated (currently V86.0), please [download the Chrome Selenium driver](https://chromedriver.chromium.org/downloads) and replace the old driver in the `vendor` directory.
+> ⚠️ 注意：
+> 1. 如果需要重新浏览器登陆，只需要删除目录下的`cookie.dat`即可。
+> 2. 如果浏览器的驱动过期（目前为V86.0），请前往[下载Chrome的Selenium驱动](https://chromedriver.chromium.org/downloads) 并替换`vendor`的旧驱动。
 
-Enjoy using Anki to review the problems you've solved!
+愉快使用Anki复习做过的题目吧。
 
-## Customization
+## 自定义
 
-If you don't like the default Anki card style, you can modify the following three parameters in `project.conf` to customize the generated Anki cards:
+如果你不喜欢默认生成的Anki卡片样式，你可以修改`project.conf`里面的以下三个参数，自定义生成的Anki卡片。
 
 ```properties
 [DB]
@@ -66,17 +64,17 @@ css = ./templates/style.css
 output = ./data/LeetCode.apkg
 ```
 
-- `front`: The format of the card front side.
-- `back`: The format of the card back side.
-- `css`: The CSS style for the cards.
+- `front`: 卡片正面的格式。
+- `back`: 卡片背面的格式。
+- `css`: 卡片的css样式。
 
 ## LICENSE
 
-This project is licensed under the GPL V3 open source license.
+本项目基于GPL V3开源协议。
 
 ## Acknowledgements
 
-This project is based on many excellent open source projects:
+本项目基于众多优秀的开源项目：
 
 - [genanki: A Library for Generating Anki Decks](https://github.com/kerrickstaley/genanki)
 
