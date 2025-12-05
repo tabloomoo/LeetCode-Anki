@@ -3,8 +3,11 @@ import re
 
 from genanki import Model, Deck, Note, Package
 from markdown import markdown
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name, PythonLexer, JavascriptLexer
+from pygments.formatters import HtmlFormatter
 
-from database import Problem
+from database import Problem, Submission
 from utils import parser as conf
 
 
@@ -25,8 +28,49 @@ def markdown_to_html(content: str):
 
 
 def code_to_html(source, language):
-    content = f"```{language}\n{source}\n```"
-    return markdown(content, extensions=['fenced_code'])
+    """Convert code to HTML with syntax highlighting using Pygments"""
+    # Map LeetCode language names to Pygments lexer names
+    language_map = {
+        'python': 'python',
+        'python3': 'python',
+        'javascript': 'javascript',
+        'js': 'javascript',
+        'java': 'java',
+        'cpp': 'cpp',
+        'c++': 'cpp',
+        'c': 'c',
+        'csharp': 'csharp',
+        'c#': 'csharp',
+        'ruby': 'ruby',
+        'swift': 'swift',
+        'golang': 'go',
+        'go': 'go',
+        'kotlin': 'kotlin',
+        'rust': 'rust',
+        'typescript': 'typescript',
+        'php': 'php',
+        'scala': 'scala',
+        'mysql': 'sql',
+        'mssql': 'sql',
+        'oraclesql': 'sql'
+    }
+    
+    # Get the appropriate lexer
+    lexer_name = language_map.get(language.lower(), 'python')
+    try:
+        lexer = get_lexer_by_name(lexer_name)
+    except:
+        lexer = PythonLexer()
+    
+    # Use HtmlFormatter with appropriate options for Anki
+    formatter = HtmlFormatter(
+        style='default',
+        noclasses=False,
+        cssclass='highlight',
+        linenos=False
+    )
+    
+    return highlight(source, lexer, formatter)
 
 
 def get_anki_model():
@@ -68,17 +112,29 @@ def make_note(problem):
     tags = ";".join([t.name for t in problem.tags])
     tags_slug = ";".join([t.slug for t in problem.tags])
 
+    # Get the latest submission only (sorted by created date)
+    submission_html = ""
     try:
-        solution = problem.solution.get()
-    except Exception:
-        solution = None
-
-    codes = []
-    for item in problem.submissions:
-        source = re.sub(r'(\\u[\s\S]{4})',lambda x:x.group(1).encode("utf-8").decode("unicode-escape"),item.source)
-        output = code_to_html(source, item.language)
-        codes.append(output)
-    submissions = "\n".join(codes)
+        latest_submission = (
+            Submission.select()
+            .where(Submission.slug == problem.slug)
+            .order_by(Submission.created.desc())
+            .first()
+        )
+        
+        if latest_submission:
+            # Decode unicode escapes in the source code
+            source = re.sub(
+                r'(\\u[\s\S]{4})',
+                lambda x: x.group(1).encode("utf-8").decode("unicode-escape"),
+                latest_submission.source
+            )
+            # Add language label before the code
+            language_label = f'<div style="margin-bottom: 5px; color: #666; font-weight: bold;">Language: {latest_submission.language.title()}</div>'
+            submission_html = language_label + code_to_html(source, latest_submission.language)
+    except Exception as e:
+        print(f"    ⚠️  No submission found: {e}")
+        submission_html = "<p>No submission available</p>"
 
     note = Note(
         model=get_anki_model(),
@@ -90,8 +146,8 @@ def make_note(problem):
             problem.description,
             tags,
             tags_slug,
-            markdown_to_html(solution.content) if solution else "",
-            submissions
+            "",  # Empty solution field - we only show submission now
+            submission_html
         ],
         guid=str(problem.display_id),
         sort_field=str(problem.display_id),
